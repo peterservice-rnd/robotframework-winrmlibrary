@@ -18,8 +18,7 @@ Installation
 Documentation
 -------------
 
-See keyword documentation for robotframework-winrmlibrary library in
-folder ``docs``.
+Keyword documentation for robotframework-winrmlibrary library: docs_.
 
 Example
 -------
@@ -60,3 +59,5 @@ Apache License 2.0
 
 .. |Build Status| image:: https://travis-ci.org/peterservice-rnd/robotframework-winrmlibrary.svg?branch=master
    :target: https://travis-ci.org/peterservice-rnd/robotframework-winrmlibrary
+   
+.. _docs: https://rawgit.com/peterservice-rnd/robotframework-winrmlibrary/master/docs/WinRMLibrary.html   
