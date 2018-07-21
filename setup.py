@@ -18,7 +18,7 @@ with open(path.join(here, 'requirements.txt')) as f:
 
 setup(
     name='robotframework-winrmlibrary',
-    version='1.0.0',
+    version='1.0.1',
     description='Robot Framework library for Windows Remote Management',
     long_description=long_description,
     url='https://github.com/peterservice-rnd/robotframework-winrmlibrary',
