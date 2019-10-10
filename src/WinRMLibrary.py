@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
+from typing import List, Optional
+
+import winrm
 from robot.api import logger
 from robot.utils import ConnectionCache
-import winrm
 
 
 class WinRMLibrary(object):
@@ -24,46 +26,45 @@ class WinRMLibrary(object):
 
     ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
-    def __init__(self):
+    def __init__(self) -> None:
         """ Init method. """
-        self._session = None
+        self._session: Optional[winrm.Session] = None
         self._cache = ConnectionCache('No sessions created')
 
-    def create_session(self, alias, hostname, login, password):
+    def create_session(self, alias: str, hostname: str, login: str, password: str) -> int:
         """
         Create session with windows host.
 
-        Does not support domain authentification.
+        Does not support domain authentication.
 
         *Args:*\n
-        _alias_ - robot framework alias to identify the session\n
-        _hostname_ -  windows hostname (not IP)\n
-        _login_ - windows local login\n
-        _password_ - windows local password
+            _alias_ - robot framework alias to identify the session\n
+            _hostname_ -  windows hostname (not IP)\n
+            _login_ - windows local login\n
+            _password_ - windows local password
 
         *Returns:*\n
-        Session index
+            Session index
 
         *Example:*\n
         | Create Session  |  server  |  windows-host |  Administrator  |  1234567890 |
         """
 
-        logger.debug('Connecting using : hostname={0:s}, login={1:s}, '
-                     'password={2:s} '.format(hostname, login, password))
+        logger.debug(f'Connecting using : hostname={hostname}, login={login}, password={password} ')
         self._session = winrm.Session(hostname, (login, password))
         return self._cache.register(self._session, alias)
 
-    def run_cmd(self, alias, command, params=None):
+    def run_cmd(self, alias: str, command: str, params: List[str] = None) -> winrm.Response:
         """
-        Execute command on remote mashine.
+        Execute command on remote machine.
 
         *Args:*\n
-        _alias_ - robot framework alias to identify the session\n
-        _command_ -  windows command\n
-        _params_ - lists of command's parameters
+            _alias_ - robot framework alias to identify the session\n
+            _command_ -  windows command\n
+            _params_ - lists of command's parameters
 
         *Returns:*\n
-        Result object with methods: status_code, std_out, std_err.
+            Result object with methods: status_code, std_out, std_err.
 
         *Example:*\n
         | ${params}=  | Create List  |  "/all" |
@@ -83,25 +84,24 @@ class WinRMLibrary(object):
         """
 
         if params is not None:
-            log_cmd = command + ' ' + ' '.join(params)
+            log_cmd = f'{command} {" ".join(params)}'
         else:
             log_cmd = command
-        logger.info('Run command on server with alias "{0:s}": {1:s} '
-                    .format(alias, log_cmd))
+        logger.info(f'Run command on server with alias "{alias}": {log_cmd}')
         self._session = self._cache.switch(alias)
         result = self._session.run_cmd(command, params)
         return result
 
-    def run_ps(self, alias, script):
+    def run_ps(self, alias: str, script: str) -> winrm.Response:
         """
-        Run power shell script on remote mashine.
+        Run power shell script on remote machine.
 
         *Args:*\n
-         _alias_ - robot framework alias to identify the session\n
-         _script_ -  power shell script\n
+             _alias_ - robot framework alias to identify the session\n
+             _script_ -  power shell script\n
 
         *Returns:*\n
-         Result object with methods: status_code, std_out, std_err.
+             Result object with methods: status_code, std_out, std_err.
 
         *Example:*\n
 
@@ -115,12 +115,12 @@ class WinRMLibrary(object):
         |
         """
 
-        logger.info('Run power shell script on server with alias "%s": %s ' % (alias, script))
+        logger.info(f'Run power shell script on server with alias "{alias}": {script}')
         self._session = self._cache.switch(alias)
         result = self._session.run_ps(script)
         return result
 
-    def delete_all_sessions(self):
+    def delete_all_sessions(self) -> None:
         """ Removes all sessions with windows hosts"""
 
         self._cache.empty_cache()
